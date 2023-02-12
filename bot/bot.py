@@ -21,15 +21,19 @@ def message_handle(m:types.Message, type):
     lang = get_lang(m, LANGUAGE_CODES)
     return MESSAGES[lang][type]['title'] == m.text
 
+def faq_handle(c:types.CallbackQuery):
+    lang = get_lang(c, LANGUAGE_CODES)
+    return c.data.startswith('faq_') and FAQ_MESSAGES[lang].get(int(c.data.split('_')[-1])) is not None
 
-async def send(message, type):
 
+async def send(message, type, messages=None):
+    messages = messages or MESSAGES
     lang_code = get_lang(message, LANGUAGE_CODES)
 
-    current_message = MESSAGES[lang_code][type]
+    current_message = messages[lang_code][type]
     text = current_message.get('text')
     markup = MARKUPS[lang_code].get(type)
-    print(markup)
+
     if current_message.get('attachment'):
         await bot.send_photo(
             chat_id=message.from_user.id,
@@ -51,7 +55,7 @@ async def load_buttons():
     db = await create_connect()
 
     LANGUAGE_CODES = [i['code'] for i in await db.fetch('SELECT code FROM localisations ORDER BY id')]
-    messages = await db.fetch("SELECT * FROM messages INNER JOIN localisations l on l.id = messages.locale_id ORDER BY priority")
+    messages = await db.fetch("SELECT messages.id, text, title, code, type, attachment FROM messages INNER JOIN localisations l on l.id = messages.locale_id ORDER BY priority")
 
     await db.close()
 
@@ -64,8 +68,12 @@ async def load_buttons():
             MARKUPS[m['code']]['start'].add(KeyboardButton(text=m['title']))
             MARKUPS[m['code']]['start'].adjust(2)
         elif m['type'] == 'faq':
-            MARKUPS[m['code']]['faq_main'].add(InlineKeyboardButton(text=m['title'],callback_data='faq'))
-            MARKUPS[m['code']]['faq_main'].adjust(2)
+            FAQ_MESSAGES.setdefault(m['code'],{})
+            FAQ_MESSAGES[m['code']][m['id']] = m
+
+            MARKUPS[m['code']]['faq_main'].add(InlineKeyboardButton(text=m['title'],callback_data=f'faq_{m["id"]}'))
+            if len(m['title']) > 25:
+                MARKUPS[m['code']]['faq_main'].adjust(2)
 
         MESSAGES.setdefault(m['code'], {})
         MESSAGES[m['code']][m['type']] = {
@@ -113,6 +121,13 @@ async def about_us(message: types.Message):
 @dp.message(lambda m: message_handle(m, 'faq_main'))
 async def faq_main(message:types.Message):
     await send(message, 'faq_main')
+
+
+@dp.callback_query(lambda c: faq_handle(c))
+async def faq_handler(call:types.CallbackQuery):
+    faq_id = int(call.data.split('_')[-1])
+    await send(call, faq_id, FAQ_MESSAGES)
+
 
 if __name__ == '__main__':
     run(load_buttons())
