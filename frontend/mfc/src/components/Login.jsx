@@ -31,6 +31,9 @@ const Login = () => {
                         buttonSize='large'
                         lang="ru"
                     />
+                    <p className='mt-5 mb-3 h6' style={{color:'#fff'}}>
+                        Designed by <a className='btn btn-outline-light' style={{marginInline:'5px'}} href="https://t.me/halisl">Holms</a> for МФЦ РУТ (МИИТ)
+                    </p>
                 </div>
             </div>
         </div>

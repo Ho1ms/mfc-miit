@@ -1,3 +1,3 @@
 
-export const apiUrl = process.env.backendUrl || 'http://localhost:3005'
+export const apiUrl = 'https://mfc.ginda.info/api'
 

@@ -7,7 +7,7 @@ load_dotenv()
 if __name__ == '__main__':
     soketio.run(app,
         host=getenv('host'),
-        port=getenv('port'),
-        debug=getenv('debug'),
-        allow_unsafe_werkzeug=True
+        port=int(getenv('port')),
+        debug=True,
+        # allow_unsafe_werkzeug=True
     )
