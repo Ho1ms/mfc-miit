@@ -41,7 +41,8 @@ function App() {
                             return <Route key={index} element={route.module} exact
                                           path={route.link + (route.link_params?.length > 0 ? '/:' + route.link_params.join('/:') : '')}/>
                         }
-                    })}
+                    }
+                    )}
                 </Routes>
             </authContext.Provider>
         </div>

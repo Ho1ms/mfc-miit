@@ -14,11 +14,7 @@ _type = type
 
 MESSAGES = {}
 FAQ_MESSAGES = {}
-MARKUPS = {'ru': {
-    'service': InlineKeyboardBuilder().row(
-        InlineKeyboardButton(text='Справка с места учёбы', web_app=WebAppInfo(url='https://mfc.api.ginda.info/form'))).row(InlineKeyboardButton(text='Справка о размере стипендии', web_app=WebAppInfo(url='https://mfc.api.ginda.info/form')))
-
-}}
+MARKUPS = {}
 LANGUAGE_CODES = []
 
 
@@ -60,34 +56,57 @@ async def load_buttons():
 
     db = await create_connect()
 
-    LANGUAGE_CODES = [i['code'] for i in await db.fetch('SELECT code FROM localisations ORDER BY id')]
     messages = await db.fetch(
-        "SELECT messages.id, text, title, code, type, attachment FROM messages INNER JOIN localisations l on l.id = messages.locale_id ORDER BY priority")
+        "SELECT type, code, title, text, attachment "
+        "FROM messages "
+        "INNER JOIN localisation l on messages.id = l.message_id "
+        "INNER JOIN languages l2 on l2.id = l.language_id "
+        "ORDER BY priority"
+    )
+    faq_messages = await db.fetch("SELECT faq.id, title, text, code, attachment FROM faq INNER JOIN languages l on l.id = faq.language")
+    languages = await db.fetch('SELECT code FROM languages ORDER BY id')
+    for lang in languages:
+        lang = lang['code']
+
+        MARKUPS[lang] = {
+            'faq_main': InlineKeyboardBuilder(),
+            'start': ReplyKeyboardBuilder(),
+            'service': InlineKeyboardBuilder()
+        }
+        FAQ_MESSAGES[lang] = {}
+        MESSAGES[lang] = {}
+
+        LANGUAGE_CODES.append(lang)
 
     await db.close()
 
-    for m in messages:
-        MARKUPS.setdefault(m['code'], {})
-        MARKUPS[m['code']].setdefault('start', ReplyKeyboardBuilder())
-        MARKUPS[m['code']].setdefault('faq_main', InlineKeyboardBuilder())
+    for faq in faq_messages:
+        FAQ_MESSAGES[faq['code']][faq['id']] = faq
 
-        if m['type'] in ['about', 'faq_main', 'service', 'ticket']:
-            MARKUPS[m['code']]['start'].add(KeyboardButton(text=m['title']))
-            MARKUPS[m['code']]['start'].adjust(2)
-        elif m['type'] == 'faq':
-            FAQ_MESSAGES.setdefault(m['code'], {})
-            FAQ_MESSAGES[m['code']][m['id']] = m
+        MARKUPS[faq['code']]['faq_main'].add(
+            InlineKeyboardButton(text=faq['title'], callback_data=f'faq_{faq["id"]}')
+        )
 
-            MARKUPS[m['code']]['faq_main'].add(InlineKeyboardButton(text=m['title'], callback_data=f'faq_{m["id"]}'))
-            if len(m['title']) > 25:
-                MARKUPS[m['code']]['faq_main'].adjust(2)
+    for message in messages:
 
-        MESSAGES.setdefault(m['code'], {})
-        MESSAGES[m['code']][m['type']] = {
-            'attachment': m['attachment'],
-            'text': m['text'],
-            'title': m['title']
+        if message['type'] in ['about', 'faq_main', 'service', 'ticket']:
+            MARKUPS[message['code']]['start'].add(KeyboardButton(text=message['title']))
+
+        if message['type'] == 'service_buttons':
+            MARKUPS[message['code']]['service'].row(
+                InlineKeyboardButton(text=message['title'], web_app=WebAppInfo(url=message['text']))
+            )
+            continue
+
+        MESSAGES[message['code']][message['type']] = {
+            'attachment': message['attachment'],
+            'text': message['text'],
+            'title': message['title']
         }
+
+    for lang in LANGUAGE_CODES:
+        MARKUPS[lang]['start'].adjust(2)
+        MARKUPS[lang]['faq_main'].adjust(2)
 
 
 @dp.message(commands=['start'])
@@ -99,8 +118,15 @@ async def process_start_command(message: types.Message):
 
     if len(avatars) > 0:
         file = await bot.get_file(avatars[0][-1].file_id)
-        await bot.download_file(file.file_path,
-                                join(getenv('static_folder'), 'img', 'avatars', f'avatar_{message.from_user.id}.jpg'))
+
+        await bot.download_file(
+            file.file_path,
+            join(
+                getenv('static_folder'), 'img',
+                'avatars', f'avatar_{message.from_user.id}.jpg'
+            )
+        )
+
         avatar = f'avatar_{message.from_user.id}.jpg'
     else:
         avatar = f'unknown_user.jpg'
@@ -139,6 +165,20 @@ async def faq_handler(call: types.CallbackQuery):
     faq_id = int(call.data.split('_')[-1])
     await send(call, faq_id, FAQ_MESSAGES)
 
+
+@dp.message(commands=['refresh_buttons'])
+async def refresh_buttons(message: types.Message):
+    db = await create_connect()
+
+    authorize_user = await db.fetch("SELECT COUNT(*) cnt FROM users WHERE id=$1 AND role_id is not NULL", message.from_user.id)
+    await db.close()
+
+    if authorize_user == 0:
+        return await message.answer('У вас нет доступа!')
+
+    await bot.send_message(message.chat.id,'Перезагружаю...')
+    await load_buttons()
+    await bot.send_message(message.chat.id, 'Конфиг успешно перезагружен...')
 
 if __name__ == '__main__':
     run(load_buttons())

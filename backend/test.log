@@ -1,1 +1,1 @@
-{'name': 'Данила', 'last_name': 'Гинда', 'father_name': '', 'group': 'ШАД-112', 'birthday': '2005-04-07', 'email': 'danila@ginda.info', 'target': 'Военкомат', 'count': '1'}
+{'name': 'Данила', 'last_name': 'Гинда', 'father_name': '', 'email': 'danila@ginda.info', 'birthday': '2005-04-07', 'group': 'ШАД-112', 'count': '1', 'type': 1, 'user': -1}

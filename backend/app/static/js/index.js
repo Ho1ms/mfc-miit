@@ -3,55 +3,91 @@ const tg = window.Telegram.WebApp
 tg.expand()
 
 user = tg.initDataUnsafe.user
+const type = new URL(location.href).searchParams.get('type') || 1
 
-const config = {
-    'name': 'Имя',
-    'last_name': 'Фамилия',
-    'father_name': 'Отчество',
-    'group': 'Номер группы',
-    'birthday': 'Дата рождения',
-    'email': 'Электронная почта',
-    'target': 'Для предоставления в',
-    'count': 'Количество',
-    'btn': 'Отправить заявку'
-}
+let config = {}
 
-function invalidHandler(name) {
-    console.log(name)
-    alert(`Поле ${config[name]} заполнено не корректно!`)
+
+function renderForm() {
+    const form = document.getElementsByTagName('form')[0]
+    console.log(form)
+    config.names.forEach(name => {
+
+        const div = document.createElement('div')
+        div.classList.add('mb-4')
+
+        const label = document.createElement('label')
+        label.for = name
+        label.innerText = config.data[name].name
+        label.classList.add('form-label')
+
+        const input = document.createElement('input')
+
+        input.type = config.data[name].data.type
+        input.style.fontSize = '2.5vh'
+        input.classList.add('form-control-lg')
+        input.classList.add('form-control')
+        input.id = name
+        input.required = config.data[name].data.required
+
+        if (config.data[name].data.pattern) {
+            input.pattern = config.data[name].data.pattern
+        }
+        if (config.data[name].data.value) {
+            input.value = config.data[name].data.value
+        }
+
+        form.appendChild(div)
+        div.appendChild(label)
+        div.appendChild(input)
+    })
+
+    let btn = document.createElement('button')
+    btn.type = 'submit'
+    btn.id = 'btn'
+    btn.style.width = '100%'
+    btn.style.fontSize = '2.5vh'
+    btn.classList.add('btn')
+    btn.classList.add('btn-primary')
+    btn.classList.add('mt-5')
+    btn.innerText = config.button
+    form.appendChild(btn)
+
+    document.getElementsByTagName('h1')[0].innerText = config.title
+
 }
 
 function handleForm() {
     let form = {}
 
-    Object.keys(config).forEach(name => {
+    config.names.forEach(name => {
         if (name === 'btn') return
 
         let elem = document.getElementById(name)
+
         form[name] = elem.value
     })
+    form.type = type
+    form.lang = user?.language_code || 'ru'
+    form.user_id = user?.id || 1469793383
 
-    form.user = user
-
-    fetch('/add', {
+    fetch('/form/add', {
         'method': 'POST',
         'body': JSON.stringify(form),
         'headers': {'Content-Type': 'application/json'}
     })
         .then(resp => tg.close())
-
 }
 
+
 window.onload = () => {
-
-    Object.keys(config).forEach(name => {
-
-        let elem = document.querySelector(`label[for=${name}]`)
-
-        if (!elem) return
-
-        document.getElementById(name).addEventListener(oninvalid, invalidHandler, name)
-        elem.innerText = config[name]
-    })
+    fetch(`/form/get-form?type=${type}&lang=${user?.language_code || 'ru'}`)
+        .then(resp => resp.json())
+        .then(resp => {
+            config = resp
+            console.log(config)
+            renderForm()
+        })
+        .catch(e => console.log(e))
 
 }
