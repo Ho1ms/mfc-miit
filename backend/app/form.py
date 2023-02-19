@@ -12,10 +12,6 @@ from .modules.form_config import *
 form_router = Blueprint('form', __name__, url_prefix='/form')
 
 
-@form_router.get('/')
-@cross_origin()
-def form_send():
-    return render_template('form.html')
 
 
 def check(date):

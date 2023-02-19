@@ -1,6 +1,6 @@
 from os import getenv
-from flask import Flask
-from flask_cors import CORS
+from flask import Flask, render_template
+from flask_cors import CORS, cross_origin
 from flask_socketio import SocketIO
 from dotenv import load_dotenv
 
@@ -11,6 +11,11 @@ app.config['SECRET_KEY'] = getenv('SECRET_KEY')
 CORS(app)
 
 soketio = SocketIO(app)
+
+@app.get('/')
+@cross_origin()
+def form_send():
+    return render_template('form.html')
 
 from .auth import login_router
 app.register_blueprint(login_router)

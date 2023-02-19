@@ -69,7 +69,7 @@ function handleForm() {
     })
     form.type = type
     form.lang = user?.language_code || 'ru'
-    form.user_id = user?.id || '1469793383'
+    form.user_id = user?.id || 1469793383
 
     fetch('/form/add', {
         'method': 'POST',
