@@ -155,6 +155,11 @@ async def faq_main(message: types.Message):
     await send(message, 'faq_main')
 
 
+@dp.message(lambda m: message_handle(m, 'ticket'))
+async def ticket_handler(message: types.Message):
+    await send(message, 'ticket')
+
+
 @dp.message(lambda m: message_handle(m, 'service'))
 async def service_handler(message: types.Message):
     await send(message, 'service')
@@ -177,8 +182,11 @@ async def refresh_buttons(message: types.Message):
         return await message.answer('У вас нет доступа!')
 
     await bot.send_message(message.chat.id,'Перезагружаю...')
+
     await load_buttons()
     await bot.send_message(message.chat.id, 'Конфиг успешно перезагружен...')
+
+
 
 if __name__ == '__main__':
     run(load_buttons())

@@ -30,18 +30,17 @@ def check(date):
 @cross_origin()
 def form_add():
     data = request.json
-    type = data.get('type')
+    type = str(data.get('type'))
     lang = data.get('lang')
     lang = lang if lang in ('en', 'ru') else 'ru'
 
     birthday = check(data.get('birthday'))
 
-    if (type not in ('1', '2')) or (not isinstance(data.get('user_id'), int)) or (
-            birthday > datetime.datetime.now() - datetime.timedelta(days=30 * 12 * 5)):
-        return {}, 400
+    if (type not in ('1', '2')) or (not isinstance(data.get('user_id'), int)) or (birthday > datetime.datetime.now() - datetime.timedelta(days=30 * 12 * 5)):
+        return data, 401
 
     if type == '2' and (not check(data.get('date_start')) or not check(data.get('date_end'))):
-        return {}, 400
+        return data, 402
 
     db, sql = create_connect()
 
