@@ -29,11 +29,18 @@ function renderForm() {
         input.id = name
         input.required = config.data[name].data.required
 
+
         if (config.data[name].data.pattern) {
             input.pattern = config.data[name].data.pattern
         }
         if (config.data[name].data.value) {
             input.value = config.data[name].data.value
+        }
+        if (config.data[name].data.max) {
+            input.max = config.data[name].data.max
+        }
+        if (config.data[name].data.min) {
+            input.min = config.data[name].data.min
         }
 
         form.appendChild(div)
