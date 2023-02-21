@@ -57,5 +57,5 @@ btn_name = {
 }
 params = {
         '1': ['name', 'last_name', 'father_name', 'email', 'birthday', 'group_name','target', 'count'],
-        '2': ['name', 'last_name', 'father_name', 'email', 'birthday', 'date_start','target', 'date_end', 'group_name', 'count']
+        '2': ['name', 'last_name', 'father_name', 'email', 'birthday', 'date_start', 'date_end','target', 'group_name', 'count']
     }

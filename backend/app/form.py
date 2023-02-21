@@ -52,14 +52,16 @@ def form_add():
                                                                        data.get(param, '')):
             return dumps({'message': 'Hacking attempt, calling in cyber-police! #2', 'resultCode': 2}), 403
 
-    if not data['count'].isdigit() or (data['count'].isdigit() and 0 < int(data['count']) < 10):
+    if not data['count'].isdigit() or (data['count'].isdigit() and 0 > int(data['count']) > 10):
         return dumps({'message': 'Hacking attempt, calling in cyber-police! #3', 'resultCode': 2}), 403
 
-    if type == '2' and 'date_start' not in data or 'date_end' not in data or not check(data['date_start']) or not check(
-            data['date_end']):
+    if type == '2' and ('date_start' not in data or 'date_end' not in data or not check(data['date_start']) or not check(
+            data['date_end'])):
         return dumps({'message': 'Hacking attempt, calling in cyber-police! #3', 'resultCode': 2}), 403
 
     db, sql = create_connect()
+
+    data['user_id'] = user['id']
 
     sql.execute(
         f"""INSERT INTO certificates (user_id, type, {', '.join(params[type])})
@@ -86,7 +88,7 @@ def form_add():
     for key in params[type]:
         msg += f"<b>{config[lang][key]}:</b> <code>{data[key]}</code>\n"
 
-    msg += msg_footer
+    msg += f'\n{msg_footer}'
 
     tg_send(msg, user['id'])
     return {'message': 'ok', 'resultCode': 0}, 200

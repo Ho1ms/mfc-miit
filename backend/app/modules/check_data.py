@@ -4,6 +4,7 @@ from re import fullmatch
 from hashlib import sha256
 from operator import itemgetter
 from urllib.parse import parse_qsl
+from json import loads
 
 
 def check_response(data: dict) -> bool:
@@ -29,11 +30,9 @@ def check_response(data: dict) -> bool:
     return hmac_string == data['hash']
 
 
-def check_webapp_signature(init_data: str) -> dict:
+def check_webapp_signature(init_data: str) -> dict :
 
     parsed_data = dict(parse_qsl(init_data))
-
-    print(parsed_data)
 
     hash_ = parsed_data.pop('hash')
     data_check_string = "\n".join(
@@ -47,5 +46,5 @@ def check_webapp_signature(init_data: str) -> dict:
     ).hexdigest()
 
     if calculated_hash == hash_:
-        return parsed_data['user']
+        return loads(parsed_data['user'])
     return {}
