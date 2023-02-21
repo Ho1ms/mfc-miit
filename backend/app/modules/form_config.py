@@ -10,13 +10,13 @@ titles = {
     }
 
 type_settings = {
-        'name': {'required': True, 'type': 'text'},
-        'last_name': {'required': True, 'type': 'text'},
-        'father_name': {'type': 'text'},
+        'name': {'required': True, 'type': 'text','pattern': '[А-ЯA-Z]{1}[а-яa-z]{0,32}'},
+        'last_name': {'required': True, 'type': 'text','pattern': '[А-ЯA-Z]{1}[а-яa-z]{0,32}'},
+        'father_name': {'type': 'text','pattern': '[А-ЯA-Z]{0,1}[а-яa-z]{0,32}'},
         'birthday': {'required': True, 'type': 'date'},
         'email': {'required': True, 'type': 'text',
                   'pattern': '^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$'},
-        'target': {'required': True, 'type': 'text'},
+        'target': {'required': True, 'type': 'text','pattern':'.{0,256}'},
         'group_name': {'required': True, 'type': 'text', 'pattern': '[А-Яа-я]{3,5}-\d\d\d'},
         'count': {'required': True, 'type': 'number', 'min': 1, 'max': 10, 'value': 1},
         'date_start': {'required': True, 'type': 'date'},

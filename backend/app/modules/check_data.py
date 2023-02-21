@@ -2,9 +2,11 @@ import hmac
 from os import getenv
 from re import fullmatch
 from hashlib import sha256
+from operator import itemgetter
+from urllib.parse import parse_qsl
 
 
-def check_response(data):
+def check_response(data: dict) -> bool:
     d = data.copy()
     d_list = []
 
@@ -25,3 +27,25 @@ def check_response(data):
     hmac_string = hmac.new(secret_key, data_string, sha256).hexdigest()
 
     return hmac_string == data['hash']
+
+
+def check_webapp_signature(init_data: str) -> dict:
+
+    parsed_data = dict(parse_qsl(init_data))
+
+    print(parsed_data)
+
+    hash_ = parsed_data.pop('hash')
+    data_check_string = "\n".join(
+        f"{k}={v}" for k, v in sorted(parsed_data.items(), key=itemgetter(0))
+    )
+    secret_key = hmac.new(
+        key=b"WebAppData", msg=getenv('BOT_TOKEN').encode(), digestmod=sha256
+    )
+    calculated_hash = hmac.new(
+        key=secret_key.digest(), msg=data_check_string.encode(), digestmod=sha256
+    ).hexdigest()
+
+    if calculated_hash == hash_:
+        return parsed_data['user']
+    return {}

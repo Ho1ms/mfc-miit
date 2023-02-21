@@ -2,7 +2,6 @@ const tg = window.Telegram.WebApp
 
 tg.expand()
 
-user = tg.initDataUnsafe.user
 const type = new URL(location.href).searchParams.get('type') || 1
 
 let config = {}
@@ -57,6 +56,17 @@ function renderForm() {
 
 }
 
+function showNotify(data){
+    const class_types = ['success','warning','danger']
+
+    const alert = document.getElementById('alert')
+    const title = document.getElementById('h1_title')
+
+    title.innerText = data.message
+    alert.classList.add(`alert-${class_types[data.resultCode]}`)
+    alert.style.display = 'block'
+}
+
 function handleForm() {
     let form = {}
 
@@ -64,28 +74,34 @@ function handleForm() {
         if (name === 'btn') return
 
         let elem = document.getElementById(name)
-
         form[name] = elem.value
     })
+
     form.type = type
-    form.lang = user?.language_code || 'ru'
-    form.user_id = user?.id || 1469793383
+    form.sign = decodeURIComponent(tg.initData)
 
     fetch('/form/add', {
         'method': 'POST',
         'body': JSON.stringify(form),
         'headers': {'Content-Type': 'application/json'}
     })
-        .then(resp => tg.close())
+        .then(resp => resp.json())
+        .then(data => {
+            if (data.resultCode === 0) {
+                tg.close()
+            } else {
+                showNotify(data)
+            }
+        })
 }
 
 
 window.onload = () => {
-    fetch(`/form/get-form?type=${type}&lang=${user?.language_code || 'ru'}`)
+    fetch(`/form/get-form?type=${type}&lang=${tg?.initDataUnsafe?.user?.language_code || 'ru'}`)
         .then(resp => resp.json())
         .then(resp => {
             config = resp
-            console.log(config)
+
             renderForm()
         })
         .catch(e => console.log(e))
