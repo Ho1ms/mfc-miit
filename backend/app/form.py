@@ -126,7 +126,7 @@ def get_forms(user):
     db, sql = create_connect()
 
     sql.execute(
-        "SELECT c.id, username, c.last_name || ' ' || substring(c.name,  0, 2) || '. ' || substring(c.father_name,  0, 2) || '.' author, email, to_char(birthday,'dd.mm.YYYY') birthday, group_name,  to_char(create_at,  'HH24:MM dd.mm.YYYY') create_at FROM certificates c INNER JOIN bot_users bu on c.user_id = bu.id")
+        "SELECT c.id, username, c.last_name, c.name, c.father_name, email, to_char(birthday,'dd.mm.YYYY') birthday, group_name,  to_char(create_at,  'HH24:MM dd.mm.YYYY') create_at, status FROM certificates c INNER JOIN bot_users bu on c.user_id = bu.id")
     rows = sql.fetchall()
 
     db.close()

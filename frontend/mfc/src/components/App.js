@@ -1,22 +1,21 @@
-import React, {useEffect, useState} from "react";
-import LoadingPage from "./LoadingPage";
 import axios from "axios";
-import {getAuthCookie, isAuth} from "../modules";
-import {apiUrl} from "../config";
-import Login from "./Login";
 import {Routes, Route} from "react-router-dom";
-import Main from './Main'
-import {authContext} from './Context'
+import React, {useEffect, useState} from "react";
 
-const routes = [
-    {module: <Main/>, link: '/', roles: [0]}
-]
+import {apiUrl} from "../config";
+import {authContext} from './Context';
+import {getAuthCookie, isAuth} from "../modules";
+
+import Login from "./Login";
+import Navbar from "./Navbar";
+import LoadingPage from "./LoadingPage";
+
+import {routes} from "../config";
 
 function App() {
     const [loading, setLoading] = useState(true)
     const [User, setUser] = useState({})
 
-    console.log(User)
     useEffect(() => {
         axios.get(apiUrl + '/auth/me', getAuthCookie())
             .then(resp => {
@@ -28,22 +27,27 @@ function App() {
     if (loading) {
         return <LoadingPage/>
     }
-
+    const userAuth = (User.resultCode === 2 || Object.keys(User).length === 0)
     return (
         <div>
             <authContext.Provider value={{
                 User, setUser
             }}>
-                <Routes>
-                    {User.resultCode === 2 && <Route path='*' element={<Login/>}/>}
-                    {routes.map((route, index) => {
-                        if (isAuth(User, route)) {
-                            return <Route key={index} element={route.module} exact
-                                          path={route.link + (route.link_params?.length > 0 ? '/:' + route.link_params.join('/:') : '')}/>
-                        }
-                    }
-                    )}
-                </Routes>
+                {!userAuth && <Navbar/>}
+                <div className={'container-fluid'}>
+
+                    <Routes>
+                        {userAuth && <Route path='*' element={<Login/>}/>}
+                        {routes.map((route, index) => {
+                                if (isAuth(User, route)) {
+                                    return <Route key={index} element={route.module} exact
+                                                  path={route.link + (route.link_params?.length > 0 ? '/:' + route.link_params.join('/:') : '')}/>
+                                }
+                            }
+                        )}
+                    </Routes>
+
+                </div>
             </authContext.Provider>
         </div>
     );

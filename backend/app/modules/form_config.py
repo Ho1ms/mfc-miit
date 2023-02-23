@@ -12,8 +12,8 @@ titles = {
     }
 
 type_settings = {
-        'name': {'required': True, 'type': 'text','pattern': '[А-ЯA-Z]{1}[а-яa-z]{0,32}'},
-        'last_name': {'required': True, 'type': 'text','pattern': '[А-ЯA-Z]{1}[а-яa-z]{0,32}'},
+        'name': {'required': True, 'type': 'text','pattern': '[А-ЯA-Z]{1}[а-яa-z-]{0,32}'},
+        'last_name': {'required': True, 'type': 'text','pattern': '[А-ЯA-Z]{1}[а-яa-z-]{0,32}'},
         'father_name': {'type': 'text','pattern': '[А-ЯA-Z]{0,1}[а-яa-z]{0,32}'},
         'birthday': {'required': True, 'type': 'date', 'max':(datetime.datetime.now() - datetime.timedelta(days=365 * 5)).strftime('%Y-%m-%d')},
         'email': {'required': True, 'type': 'text',
