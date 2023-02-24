@@ -31,9 +31,9 @@ const Navbar = () => {
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         {routes.map((route, index) => {
-                            if (isAuth(User, route)) {
+                            if (isAuth(User, route) && route.navbar) {
                                 return (
-                                    <li className="nav-item">
+                                    <li className="nav-item" key={index}>
                                         <NavLink to={route.link} className={'nav-link'}>{route.title}</NavLink>
                                     </li>
                                 )

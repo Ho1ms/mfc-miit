@@ -1,6 +1,5 @@
 import React from "react";
-import Certificaties from "./Certificaties/Certificaties";
-import Navbar from "./Navbar";
+
 
 const Main = () => {
     return (

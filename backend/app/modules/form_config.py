@@ -58,4 +58,9 @@ btn_name = {
 params = {
         '1': ['name', 'last_name', 'father_name', 'email', 'birthday', 'group_name','target', 'count'],
         '2': ['name', 'last_name', 'father_name', 'email', 'birthday', 'date_start', 'date_end','target', 'group_name', 'count']
-    }
+}
+
+certs_types = {
+    '1':'certificates',
+    '2':'certificates_of_payment'
+}

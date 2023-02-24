@@ -64,7 +64,7 @@ def form_add():
     data['user_id'] = user['id']
 
     sql.execute(
-        f"""INSERT INTO certificates (user_id, type, {', '.join(params[type])})
+        f"""INSERT INTO {certs_types[type]} (user_id, type, {', '.join(params[type])})
          VALUES (%s, %s, {', '.join(['%s' for i in params[type]])})
          RETURNING id""",
         (data.get('user_id'), type, *[data[i] for i in params[type]])
@@ -120,15 +120,30 @@ def get_form():
                  ensure_ascii=False), 200
 
 
-@form_router.get('/get-forms')
+@form_router.get('/get-forms', endpoint='get_forms')
 @access_handler((1, 2, 3))
 def get_forms(user):
     db, sql = create_connect()
 
+    type = request.args.get('type')
+    if not type.isdigit():
+        return {}, 403
+
     sql.execute(
-        "SELECT c.id, username, c.last_name, c.name, c.father_name, email, to_char(birthday,'dd.mm.YYYY') birthday, group_name,  to_char(create_at,  'HH24:MM dd.mm.YYYY') create_at, status FROM certificates c INNER JOIN bot_users bu on c.user_id = bu.id")
+        f"SELECT c.id, username, c.last_name, c.name, c.father_name, email, to_char(birthday,'dd.mm.YYYY') birthday, group_name,  to_char(create_at,  'HH24:MM dd.mm.YYYY') create_at, status FROM {certs_types[type]} c INNER JOIN bot_users bu on c.user_id = bu.id")
     rows = sql.fetchall()
 
     db.close()
 
     return dumps(rows, ensure_ascii=False), 200
+
+
+@form_router.get('/cert-list',endpoint='get_certs_list')
+@access_handler((1,2,3))
+def get_certs_list(user):
+    types = [
+        {'type':'1','title':'с места учёбы'},
+        {'type':'2','title':'о размере стипендии'},
+    ]
+
+    return dumps(types, ensure_ascii=False), 200
