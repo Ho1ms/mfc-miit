@@ -9,7 +9,7 @@ def access_handler(roles: tuple = ()):
         @cross_origin()
         def inner(**kwargs):
             auth_token = r.headers.get('Authorization', '')
-
+        
             if len(auth_token) != 64:
                 return {'message': 'Undefined token', 'resultCode': 2}, 200
 

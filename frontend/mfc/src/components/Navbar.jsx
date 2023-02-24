@@ -15,12 +15,12 @@ const Navbar = () => {
         window.localStorage.removeItem('hash')
         setUser({})
     }
-
+    console.log('Navbar render', User)
     return (
         <nav className='navbar navbar-expand-lg navbar-dark' style={{backgroundColor:'#1B365D'}}>
             <div className="container-fluid">
                 <NavLink to={'/'} className={'nav-brand'}>
-                    <img alt={'rut-miit'} src={logo} width="256px" height="55px" className=' navbar-brand'/>
+                    <img alt={'rut-miit'} src={logo} width="128px" height="36px" className=' navbar-brand'/>
                 </NavLink>
 
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse"

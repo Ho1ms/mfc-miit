@@ -22,6 +22,8 @@ def form_send():
 from .auth import login_router
 app.register_blueprint(login_router)
 
-
 from .form import form_router
 app.register_blueprint(form_router)
+
+from .config_handler import config_router
+app.register_blueprint(config_router)

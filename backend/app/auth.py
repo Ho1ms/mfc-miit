@@ -29,9 +29,17 @@ def get_login():
     sql.execute("INSERT INTO sessions (token, user_id) VALUES (%s, %s)", (data['hash'], data['id']))
 
     db.commit()
+    sql.execute(
+        f"""SELECT u.id, first_name, last_name, username, role_id, r.name role
+                                FROM users u LEFT JOIN roles r on r.id = u.role_id 
+                                LEFT JOIN sessions s on u.id = s.user_id AND s.is_active = true
+                                WHERE token=%s""",
+        (data['hash'],)
+    )
+    user = sql.fetchone()
     db.close()
 
-    return dumps(data, ensure_ascii=False), 200
+    return dumps(user, ensure_ascii=False), 200
 
 
 @login_router.get('/me', endpoint='get_me')
