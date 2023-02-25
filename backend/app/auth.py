@@ -30,7 +30,7 @@ def get_login():
 
     db.commit()
     sql.execute(
-        f"""SELECT u.id, first_name, last_name, username, role_id, r.name role
+        f"""SELECT u.id, first_name, last_name, username, role_id, r.name role, photo_code
                                 FROM users u LEFT JOIN roles r on r.id = u.role_id 
                                 LEFT JOIN sessions s on u.id = s.user_id AND s.is_active = true
                                 WHERE token=%s""",

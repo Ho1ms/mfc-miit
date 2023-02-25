@@ -16,7 +16,7 @@ def access_handler(roles: tuple = ()):
             db, sql = create_connect()
 
 
-            if len(roles) > 1:
+            if len(roles) > 0:
                 role_access = f" AND role_id IN %s"
                 params = (auth_token, roles)
             else:
@@ -24,7 +24,7 @@ def access_handler(roles: tuple = ()):
                 params = (auth_token,)
 
             sql.execute(
-                f"""SELECT u.id, first_name, last_name, username, role_id, r.name role
+                f"""SELECT u.id, first_name, last_name, username, role_id, r.name role, photo_code
                             FROM users u LEFT JOIN roles r on r.id = u.role_id 
                             LEFT JOIN sessions s on u.id = s.user_id AND s.is_active = true
                             WHERE token=%s {role_access}""",
