@@ -47,7 +47,7 @@ def get_users(user):
         q_string = "WHERE username LIKE %s OR first_name LIKE %s OR last_name LIKE %s"
         q_arr = (query,query,query)
     print(q_string)
-    sql.execute(f"""SELECT u.id, username, first_name, last_name, photo_code, role_id, r.name role FROM users u INNER JOIN roles r on r.id = u.role_id 
+    sql.execute(f"""SELECT u.id, username, first_name, last_name, photo_code, role_id, r.name role FROM users u LEFT JOIN roles r on r.id = u.role_id 
     {q_string}
     ORDER BY u.id, u.role_id
     """, q_arr)

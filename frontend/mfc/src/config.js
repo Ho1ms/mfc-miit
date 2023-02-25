@@ -7,8 +7,8 @@ import Tickets from './components/Tickets/Tickets.jsx'
 import ConfigHandle from './components/ConfigHandle/ConfigHandle.jsx'
 import FAQHandle from './components/FAQHandle/FAQHandle.jsx'
 import Users from './components/Users/Users.jsx'
-export const apiUrl = 'http://localhost:3005'
-// export const apiUrl = 'https://mfc.api.ginda.info'
+// export const apiUrl = 'http://localhost:3005'
+export const apiUrl = 'https://mfc.api.ginda.info'
 
 export const statuses = {
     'new':'Новая',
@@ -18,7 +18,7 @@ export const statuses = {
 }
 
 export const routes = [
-    {title:'Главная',module: <Main/>, link: '/', roles: [1,2,3], navbar:true},
+    {title:'Главная',module: <Main/>, link: '/', roles: [null, 1,2,3], navbar:true},
     {title:'Справки',module: <CertificatesList/>, link: '/certs', roles: [1,2,3], navbar:true},
     {title:'Тикеты',module: <Tickets/>, link: '/tickets', roles: [1,2,3], navbar:true},
     {title:'Настройки',module: <ConfigHandle/>, link: '/config', roles: [1], navbar:true},

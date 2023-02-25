@@ -57,13 +57,13 @@ async def load_buttons():
     db = await create_connect()
 
     messages = await db.fetch(
-        "SELECT type, code, title, text, attachment "
+        "SELECT type, code, l.title, text, attachment "
         "FROM messages "
         "INNER JOIN localisation l on messages.id = l.message_id "
         "INNER JOIN languages l2 on l2.id = l.language_id "
         "ORDER BY priority"
     )
-    faq_messages = await db.fetch("SELECT faq.id, title, text, code, attachment FROM faq INNER JOIN languages l on l.id = faq.language")
+    faq_messages = await db.fetch("SELECT faq.id, faq.title, text, code, attachment FROM faq INNER JOIN languages l on l.id = faq.language")
     languages = await db.fetch('SELECT code FROM languages ORDER BY id')
     for lang in languages:
         lang = lang['code']

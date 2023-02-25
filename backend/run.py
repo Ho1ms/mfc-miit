@@ -8,6 +8,6 @@ if __name__ == '__main__':
     soketio.run(app,
         host=getenv('host'),
         port=int(getenv('port')),
-        debug=True,
-        # allow_unsafe_werkzeug=True
+        debug=False,
+        allow_unsafe_werkzeug=True
     )
