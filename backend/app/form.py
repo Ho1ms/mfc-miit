@@ -64,10 +64,10 @@ def form_add():
     data['user_id'] = user['id']
 
     sql.execute(
-        f"""INSERT INTO {certs_types[type]} (user_id, type, {', '.join(params[type])})
-         VALUES (%s, %s, {', '.join(['%s' for i in params[type]])})
+        f"""INSERT INTO {certs_types[type]} (user_id, {', '.join(params[type])})
+         VALUES (%s, {', '.join(['%s' for i in params[type]])})
          RETURNING id""",
-        (data.get('user_id'), type, *[data[i] for i in params[type]])
+        (data.get('user_id'), *[data[i] for i in params[type]])
     )
 
     form_id = sql.fetchone()['id']

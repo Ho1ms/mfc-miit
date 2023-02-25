@@ -15,7 +15,7 @@ const Login = () => {
                 return
             }
             setUser(resp.data)
-            window.localStorage.setItem('hash',resp.data.hash)
+            window.localStorage.setItem('hash',response.hash)
         })
     }
 
