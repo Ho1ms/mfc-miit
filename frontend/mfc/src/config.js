@@ -7,8 +7,9 @@ import Tickets from './components/Tickets/Tickets.jsx'
 import ConfigHandle from './components/ConfigHandle/ConfigHandle.jsx'
 import FAQHandle from './components/FAQHandle/FAQHandle.jsx'
 import Users from './components/Users/Users.jsx'
-// export const apiUrl = 'http://localhost:3005'
-export const apiUrl = 'https://mfc.api.ginda.info'
+import ConfigMessage from "./components/ConfigHandle/ConfigMessage";
+export const apiUrl = 'http://localhost:3005'
+// export const apiUrl = 'https://mfc.api.ginda.info'
 
 export const statuses = {
     'new':'Новая',
@@ -22,6 +23,7 @@ export const routes = [
     {title:'Справки',module: <CertificatesList/>, link: '/certs', roles: [1,2,3], navbar:true},
     {title:'Тикеты',module: <Tickets/>, link: '/tickets', roles: [1,2,3], navbar:true},
     {title:'Настройки',module: <ConfigHandle/>, link: '/config', roles: [1], navbar:true},
+    {title:'Настройки',module: <ConfigMessage/>, link: '/config', link_params:['id'], roles: [1]},
     {title:'FAQ',module: <FAQHandle/>, link: '/faq', roles: [1,2], navbar:true},
     {title:'Сотрудники',module: <Users/>, link: '/users', roles: [1], navbar:true},
     {title:'Заявки на получение справки',module: <Certificates/>, link: '/certs', link_params:['type'], roles: [1,2,3]},
