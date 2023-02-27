@@ -27,3 +27,6 @@ app.register_blueprint(form_router)
 
 from .config_handler import config_router
 app.register_blueprint(config_router)
+
+from .upload_handler import upload_router
+app.register_blueprint(upload_router)

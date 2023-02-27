@@ -1,41 +1,31 @@
 import React, {useState, useRef} from 'react';
 import {apiUrl} from "../../config";
 import axios from "axios";
-import {getAuthCookie} from "../../modules";
+import {getAuthCookie, formHandle} from "../../modules";
 
 const Message = ({message}) => {
 
     const [msg, setMsg] = useState({...message})
     const [form, setForm] = useState({...message})
     const fileInput = useRef(null)
-    function changesHandler({target}) {
-        if (target.name === 'attachment') {
 
-            const reader = new FileReader();
-            reader.readAsDataURL(target.files[0]);
-            reader.onload = function () {
-                setForm(m => {
-                    return {
-                        ...m,
-                        'attachment': reader.result
-                    }
-                })
-            };
+    async function saveData(){
 
-            return
-        }
-        setForm(m => {
-            return {
-                ...m,
-                [target.name]: target.value
+        const setHeaders = {
+            headers: {
+                ...getAuthCookie().headers,
+                'Content-Type': 'multipart/form-data'
             }
-        })
-    }
-    console.log(fileInput)
-    function saveChanges() {
-        fileInput.current.value = ''
-        axios.put(apiUrl + '/config/messages', form, getAuthCookie()).then(resp => {
-            setMsg(m=>{
+        }
+        let filename = null
+
+        if (fileInput) {
+            const resp = await axios.post(apiUrl + '/upload/messages', {'files': form['attachment']}, setHeaders)
+            filename = resp.data.files[0]
+        }
+
+        axios.put(apiUrl + '/config/messages', {...form, 'attachment':filename}, getAuthCookie()).then(resp => {
+            setMsg(m => {
                 return {
                     ...m,
                     ...resp.data,
@@ -45,7 +35,10 @@ const Message = ({message}) => {
         }).catch(e => {
             alert('Возникла ошибка на сервере(')
         })
+        fileInput.current.value = ''
     }
+
+
 
     return (
         <div key={msg.id}>
@@ -58,10 +51,10 @@ const Message = ({message}) => {
 
                 <input className="form-control" type="text" style={{width: '100%', marginBottom: '10px'}}
                        name="title"
-                       defaultValue={msg.title} onBlur={changesHandler}/>
+                       defaultValue={msg.title} onBlur={(e) => formHandle(setForm, e)}/>
                 <textarea className="form-control" rows="5"
                           style={{width: '100%', height: '200px', marginBottom: '10px'}}
-                          name="text" defaultValue={msg.text} onBlur={changesHandler}/>
+                          name="text" defaultValue={msg.text} onBlur={(e) => formHandle(setForm, e)}/>
 
                 {msg.attachment && <img src={`${apiUrl}/static/messages/${msg.attachment}`}
                                         className="card-img-bottom"
@@ -72,10 +65,12 @@ const Message = ({message}) => {
                                             objectPosition: '50% 50%'
                                         }}/>}
 
-                <input type='checkbox' className="form-check-input" name='img_del' onBlur={changesHandler}/> Удалить
+                <input type='checkbox' className="form-check-input" name='img_del'
+                       onChange={(e) => formHandle(setForm, e)}/> Удалить
                 изображение
-                <input ref={fileInput} className="form-control my-3" name='attachment' type="file" onChange={changesHandler}/>
-                <button className="btn btn-primary" onClick={saveChanges}>Сохранить
+                <input ref={fileInput} className="form-control my-3" name='attachment' type="file"
+                       onChange={(e) => formHandle(setForm, e)}/>
+                <button className="btn btn-primary" onClick={saveData}>Сохранить
                 </button>
             </div>
             <hr/>
