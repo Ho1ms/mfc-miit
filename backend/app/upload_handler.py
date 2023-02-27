@@ -23,9 +23,11 @@ def upload_handle(user, static_path):
         secure_name = secure_filename(file.filename)
 
         file_type = ('.' + secure_name.split('.')[-1]) if '.' in secure_name else ''
-        filename = sha256((secure_filename(file.filename) + str(datetime.now().timestamp())).encode('utf-8')).hexdigest()
+        file_name = sha256(file.read()).hexdigest() + file_type
 
-        file.save(path.join(getenv('static_folder'), static_path, filename + file_type))
-        file_list.append(filename + file_type)
+        file.stream.seek(0)
+        file.save(path.join(getenv('static_folder'), static_path, file_name))
+
+        file_list.append(file_name)
 
     return dumps({'files': file_list}, ensure_ascii=False), 200
