@@ -23,16 +23,17 @@ const CertificatesList = () => {
             {
                 certTypes.map((cert, index) => {
                     return (
-                        <div key={index}  className={'card my-3 p-3 w-50 mx-auto text-center'}>
-                            <NavLink style={{textDecoration: 'none', 'color': 'black'}} to={`/certs/${cert.type}`}
-                                     state={cert} role="button" className="collapsed">
-                                <h3>Справки {cert.title}</h3>
-                            </NavLink>
+                        <div key={index} className={'card my-3 p-3 w-50 mx-auto text-center'}>
+                            <NavLink style={{textDecoration: 'none', 'color': 'black'}}
+                                     to={{pathname: `/certs/${cert.type}`}}
+                                         state={cert} role="button" className="collapsed">
+                                         <h3>Справки {cert.title}</h3>
+                                         </NavLink>
 
-                        </div>
-                    )
-                })
-            }
+                                         </div>
+                                         )
+                                     })
+                            }
 
         </div>
     )

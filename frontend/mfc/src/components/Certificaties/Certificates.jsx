@@ -7,7 +7,8 @@ import Body from "./Body";
 import Filters from "./Filters";
 
 const Certificates = () => {
-    const type = useLocation().state.type
+
+    const state = useLocation().state
     const [rows, setRows] = useState([])
     const [filter, setFilter] = useState({
         id: '',
@@ -19,13 +20,13 @@ const Certificates = () => {
     })
 
     useEffect(() => {
-        axios.get(apiUrl+`/form/get-forms?type=${type}`,getAuthCookie())
+        axios.get(apiUrl+`/form/get-forms?type=${state.type}`,getAuthCookie())
             .then(resp => setRows(resp.data?.resultCode === 2 ? [] : resp.data))
     }, [])
 
     return (
         <div className='row my-5'>
-            <Body certificates={rows} filter={filter}/>
+            <Body certificates={rows} filter={filter} setRows={setRows}/>
             <Filters filter={filter} setFilter={setFilter}/>
         </div>
     )

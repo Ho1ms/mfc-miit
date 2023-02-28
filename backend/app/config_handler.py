@@ -7,13 +7,17 @@ from .modules.access_handler import access_handler
 config_router = Blueprint('config', __name__, url_prefix='/config')
 
 
-@config_router.put('/messages', endpoint='edit_messages')
+@config_router.put('/', endpoint='edit_messages')
 @access_handler((1,))
 def edit_messages(user):
     r = request.json
+    type_ = r.get('type')
+
+    if type_ not in ('faq', 'localisation'):
+        return dumps({'message': 'Hacking attempt', 'resultCode': 2}, ensure_ascii=False), 200
 
     db, sql = create_connect()
-    sql.execute("UPDATE localisation SET title=%s, text=%s, attachment=%s WHERE id=%s",
+    sql.execute(f"UPDATE {type_} SET title=%s, text=%s, attachment=%s WHERE id=%s",
                 (r.get('title'),
                  r.get('text'),
                  r.get('attachment') if not r.get('img_del') else None, r['id']))
@@ -31,11 +35,55 @@ def get_messages(user):
         return dumps({'message': 'Hacking attempt', 'resultCode': 2}, ensure_ascii=False), 200
 
     db, sql = create_connect()
-    sql.execute("SELECT type, l.id, title, text, attachment FROM messages "
-                "INNER JOIN localisation l on messages.id = l.message_id AND language_id = %s ORDER BY id", (lang_id))
+    sql.execute("SELECT name, l.id, title, text, attachment FROM messages "
+                "INNER JOIN localisation l on messages.id = l.message_id AND language_id = %s ORDER BY id", (lang_id,))
     rows = sql.fetchall()
     db.close()
     return dumps(rows, ensure_ascii=False), 200
+
+
+@config_router.get('/faq', endpoint='get_faq')
+@access_handler((1,2))
+def get_faq(user):
+    lang_id = request.args.get('lang')
+
+    if not lang_id.isdigit():
+        return dumps({'message': 'Hacking attempt', 'resultCode': 2}, ensure_ascii=False), 200
+
+    db, sql = create_connect()
+    sql.execute("SELECT id, title, text, attachment FROM faq f WHERE language=%s ORDER BY id DESC ", (lang_id,))
+    rows = sql.fetchall()
+    db.close()
+    return dumps(rows, ensure_ascii=False), 200
+
+@config_router.delete('/faq/<int:id>', endpoint='del_faq')
+@access_handler((1,2))
+def del_faq(user, id):
+
+    if not isinstance(id, int):
+        return dumps({'message': 'Hacking attempt', 'resultCode': 2}, ensure_ascii=False), 200
+
+    db, sql = create_connect()
+    sql.execute("DELETE FROM faq WHERE id=%s", (id,))
+    db.commit()
+    db.close()
+    return dumps({'message':f'Success deleted #{id}','resultCode':0}, ensure_ascii=False), 200
+
+
+@config_router.post('/faq', endpoint='add_faq')
+@access_handler((1,2))
+def add_faq(user):
+    data = request.json
+
+    if 'text' not in data or 'title' not in data or 'attachment' not in data or 'lang' not in data:
+        return dumps({'message': 'Hacking attempt', 'resultCode': 2}, ensure_ascii=False), 200
+
+    db, sql = create_connect()
+    sql.execute("INSERT INTO faq (language, title, text, attachment) VALUES (%s,%s,%s,%s) RETURNING id", (data['lang'], data['title'], data['text'],data['attachment']))
+    id = sql.fetchone()['id']
+    db.commit()
+    db.close()
+    return dumps({**data, 'id':id}, ensure_ascii=False), 200
 
 
 @config_router.get('/localisations', endpoint='get_localisations')

@@ -30,3 +30,6 @@ app.register_blueprint(config_router)
 
 from .upload_handler import upload_router
 app.register_blueprint(upload_router)
+
+from .certificates import status_router
+app.register_blueprint(status_router)

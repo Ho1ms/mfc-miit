@@ -36,7 +36,7 @@ def form_add():
     type = str(data.get('type'))
     lang = data.get('lang')
 
-    lang = lang if lang in ('en', 'ru') else 'ru'
+    lang = lang if lang in titles else 'ru'
     type = type if type in ('1', '2') else '1'
 
     birthday = check(data.get('birthday'))
@@ -64,14 +64,13 @@ def form_add():
     data['user_id'] = user['id']
 
     sql.execute(
-        f"""INSERT INTO {certs_types[type]} (user_id, {', '.join(params[type])})
-         VALUES (%s, {', '.join(['%s' for i in params[type]])})
+        f"""INSERT INTO {certs_types[type]} (user_id, lang, {', '.join(params[type])})
+         VALUES (%s, %s,{', '.join(['%s' for i in params[type]])})
          RETURNING id""",
-        (data.get('user_id'), *[data[i] for i in params[type]])
+        (data.get('user_id'),lang, *[data[i] for i in params[type]])
     )
-
     form_id = sql.fetchone()['id']
-    db.commit()
+
 
     sql.execute(
         "SELECT text FROM messages "
@@ -81,7 +80,7 @@ def form_add():
         (lang,)
     )
     msg_footer = sql.fetchone()['text']
-    db.close()
+
 
     msg = f'<b>{titles[lang][type]}</b> <code>#{form_id}</code>\n\n'
 
@@ -90,7 +89,12 @@ def form_add():
 
     msg += f'\n{msg_footer}'
 
-    tg_send(msg, user['id'])
+    msg_id = tg_send(msg, user['id']).get('result',{}).get('message_id')
+
+    sql.execute(f"UPDATE {certs_types[type]} SET msg_id=%s WHERE id=%s",(msg_id,form_id))
+
+    db.commit()
+    db.close()
     return {'message': 'ok', 'resultCode': 0}, 200
 
 
@@ -103,7 +107,7 @@ def get_form():
     type = request.args.get('type')
     lang = request.args.get('lang')
 
-    lang = lang if lang in ('en', 'ru') else 'ru'
+    lang = lang if lang in titles else 'ru'
     type = type if type in ('1', '2') else '1'
 
     data = {}
@@ -130,7 +134,7 @@ def get_forms(user):
         return {}, 403
 
     sql.execute(
-        f"SELECT c.id, username, c.last_name, c.name, c.father_name, email, to_char(birthday,'dd.mm.YYYY') birthday, group_name,  to_char(create_at,  'HH24:MM dd.mm.YYYY') create_at, status FROM {certs_types[type]} c INNER JOIN bot_users bu on c.user_id = bu.id")
+        f"""SELECT c.id, username, c.last_name, c.name, c.father_name, email, to_char(birthday,'dd.mm.YYYY') birthday, group_name,  to_char(create_at,  'HH24:MM dd.mm.YYYY') create_at, status {", to_char(date_start,'dd.mm.YYYY') date_start, to_char(date_end,'dd.mm.YYYY') date_end" if type=='2' else ''} FROM {certs_types[type]} c INNER JOIN bot_users bu on c.user_id = bu.id""")
     rows = sql.fetchall()
 
     db.close()
@@ -147,3 +151,5 @@ def get_certs_list(user):
     ]
 
     return dumps(types, ensure_ascii=False), 200
+
+

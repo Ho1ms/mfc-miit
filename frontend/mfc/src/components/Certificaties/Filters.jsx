@@ -50,6 +50,7 @@ const Filters = ({filter, setFilter}) => {
                     <label className="form-label">По ФИО</label>
                     <input type="text" defaultValue={filter.author} onBlur={filterHandle} name='author' className="form-control"/>
 
+                </div>
                 <div className='mb-3'>
                     <label className="form-label">По статусу</label>
 
@@ -72,8 +73,6 @@ const Filters = ({filter, setFilter}) => {
                             Выданы
                         </label>
                     </div>
-
-                </div>
 
             </div>
             <h3>Сортировать</h3>
