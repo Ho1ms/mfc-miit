@@ -134,7 +134,7 @@ def get_forms(user):
         return {}, 403
 
     sql.execute(
-        f"""SELECT c.id, username, c.last_name, c.name, c.father_name, email, to_char(birthday,'dd.mm.YYYY') birthday, group_name,  to_char(create_at,  'HH24:MM dd.mm.YYYY') create_at, status {", to_char(date_start,'dd.mm.YYYY') date_start, to_char(date_end,'dd.mm.YYYY') date_end" if type=='2' else ''} FROM {certs_types[type]} c INNER JOIN bot_users bu on c.user_id = bu.id""")
+        f"""SELECT c.id, username, c.last_name, c.name, c.father_name, email, to_char(birthday,'dd.mm.YYYY') birthday, group_name,  to_char(create_at,  'HH24:MM dd.mm.YYYY') create_at, status,count {", to_char(date_start,'dd.mm.YYYY') date_start, to_char(date_end,'dd.mm.YYYY') date_end" if type=='2' else ''} FROM {certs_types[type]} c INNER JOIN bot_users bu on c.user_id = bu.id""")
     rows = sql.fetchall()
 
     db.close()

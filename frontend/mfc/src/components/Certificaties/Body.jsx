@@ -34,6 +34,7 @@ const Body = ({certificates, filter, setRows}) => {
                 <th scope="col">Дата рождения</th>
                 <th scope="col">Группа</th>
                 {state.type==='2' && <th scope="col">Период</th>}
+                <th scope="col">Кол-во</th>
                 <th scope="col">Дата запроса</th>
                 <th scope="col">Статус</th>
                 <th scope="col"></th>

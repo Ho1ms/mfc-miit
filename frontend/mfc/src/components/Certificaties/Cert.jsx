@@ -35,6 +35,7 @@ const Cert = ({cert, setRows}) => {
             <td>{cert.group_name}</td>
             {cert_type==='2' && <td >{cert.date_start}-{cert.date_end}</td>}
 
+            <td>{cert.count}</td>
             <td>{cert.create_at}</td>
             <td>{statuses[cert.status]}</td>
             <td>
