@@ -1,6 +1,6 @@
 import React from "react";
 
-import Main from "./components/Main";
+import Dashboard from "./components/Dashboard/Index";
 import CertificatesList from "./components/Certificaties/CertificatesList";
 import Certificates from "./components/Certificaties/Certificates";
 import Tickets from './components/Tickets/Tickets.jsx'
@@ -33,7 +33,7 @@ export const statuses_styles = {
     'closed':'success'
 }
 export const routes = [
-    {title:'Главная',module: <Main/>, link: '/', roles: [null, 1,2,3], navbar:true},
+    {title:'Главная',module: <Dashboard/>, link: '/', roles: [null, 1,2,3], navbar:true},
     {title:'Справки',module: <CertificatesList/>, link: '/certs', roles: [1,2,3], navbar:true},
     {title:'Тикеты',module: <Tickets/>, link: '/tickets', roles: [1,2,3], navbar:true},
     {title:'Настройки',module: <ConfigHandle/>, link: '/config', roles: [1], navbar:true},

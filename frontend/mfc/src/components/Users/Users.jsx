@@ -18,7 +18,7 @@ const Tickets = () => {
     }, [])
 
     return (
-        <div className="justify-content-between flex-wrap flex-md-nowrap  pt-3 pb-2 mb-3 border-bottom">
+        <div className="justify-content-between flex-wrap flex-md-nowrap  pt-3 pb-2 mb-3 border-bottom container">
             <h1 className="h2">Список сотрудников:</h1>
             <Search setUsers={setUsers}/>
             {users.map((user) => <User key={user.id} user={user} setTarget={setTarget} roles={roles}/>)}
