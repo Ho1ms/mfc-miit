@@ -17,7 +17,7 @@ def status_handler(user):
     if not isinstance(cert_id, int) or str(certs_type) not in certs_types:
         return dumps({'message':'Hacking attempt!', 'resultCode':2}, ensure_ascii=False), 200
 
-    status_queue = ['new', 'active', 'ready', 'closed']
+    status_queue = ('new', 'active', 'ready', 'closed')
     db, sql = create_connect()
     sql.execute(f"SELECT status, user_id, msg_id FROM {certs_types[certs_type]} WHERE id=%s",(cert_id,))
     row = sql.fetchone()

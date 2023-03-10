@@ -34,7 +34,7 @@ function App() {
                 User, setUser
             }}>
                 {!userAuth && <Navbar/>}
-                <div className={'container-fluid'}>
+                <div className={'container'}>
 
                     <Routes>
                         {userAuth && <Route path='*' element={<Login/>}/>}

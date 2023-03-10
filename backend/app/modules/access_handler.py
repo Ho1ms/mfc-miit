@@ -15,7 +15,6 @@ def access_handler(roles: tuple = ()):
 
             db, sql = create_connect()
 
-
             if len(roles) > 0:
                 role_access = f" AND role_id IN %s"
                 params = (auth_token, roles)

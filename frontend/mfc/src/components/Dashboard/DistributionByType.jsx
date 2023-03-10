@@ -3,6 +3,7 @@ import {Doughnut} from "react-chartjs-2";
 import {Chart, CategoryScale, ArcElement, Legend, Tooltip,Title} from "chart.js";
 Chart.register(CategoryScale, ArcElement, Legend, Title,Tooltip)
 const DistributionByType = ({data}) => {
+    if (!Object.keys(data).length) return
 
     const plugins = [{
         beforeDraw: function(chart) {
@@ -15,7 +16,7 @@ const DistributionByType = ({data}) => {
 
             ctx.font = fontSize + "em sans-serif";
             ctx.textBaseline = "top";
-            const text = data.count,
+            const text = data.rows[0].total + data.rows[1].total,
                 textX = Math.round((width - ctx.measureText(text).width) / 2),
                 textY = height / 2 - 55
 
@@ -32,7 +33,7 @@ const DistributionByType = ({data}) => {
         labels: data.labels,
         datasets: [{
             label:'Заявок',
-            data: data.rows,
+            data: [data.rows[0].total, data.rows[1].total],
             backgroundColor: data.colors,
             hoverOffset: 10
         }]
@@ -48,9 +49,9 @@ const DistributionByType = ({data}) => {
     };
 
     return (
-        <div style={{width:'400px'}}>
+        <div >
             <h2 className={'text-center'}>Поступило заявок</h2>
-            <Doughnut data={settings} plugins={plugins} options={options} height={'400px'}/>
+            <Doughnut data={settings} plugins={plugins} options={options} height={'400px'} width={'400px'}/>
         </div>
 
     )

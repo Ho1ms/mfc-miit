@@ -12,6 +12,7 @@ Chart.register(
     Legend
 );
 const DistributionByDate = ({data}) => {
+    if (!Object.keys(data).length) return
 
     const options = {
         responsive: true,
@@ -22,26 +23,13 @@ const DistributionByDate = ({data}) => {
         }
     };
     const settings = {
-        labels: data.dates,
-        datasets: [
-            {
-                label: 'Dataset 1',
-                data: [432, 345, 234, 654, 232],
-                borderColor: 'rgb(255, 99, 132)',
-                backgroundColor: 'rgba(255, 99, 132, 0.5)',
-            },
-            {
-                label: 'Dataset 2',
-                data: [543, 234, 764, 345, 286],
-                borderColor: 'rgb(53, 162, 235)',
-                backgroundColor: 'rgba(53, 162, 235, 0.5)',
-            },
-        ]
+        labels: data.dates.date.data,
+        datasets: [...Object.entries(data.dates)].filter(([key, value]) => key !== 'date').map(([key, item]) => item)
     }
     return (
-        <div className={'w-100 '} style={{height: '450px'}}>
+        <div className={'w-100 '} >
             <h2 >Заявки по дням</h2>
-            <div className={'ms-auto'} style={{height: '400px'}}>
+            <div>
 
                 <Line data={settings} options={options}/>
 
