@@ -15,19 +15,20 @@ const Certificates = () => {
         group_name: '',
         author: '',
         statuses: ['new', 'active'],
-        birthday: '',
-        sort_by_new: true
+        sort_by_new: true,
+        limit:50
     })
 
     useEffect(() => {
-        axios.get(apiUrl+`/form/get-forms?type=${state.type}`,getAuthCookie())
+        axios.get(apiUrl+`/form/get-forms?type=${state.type}&filter=${JSON.stringify(filter)}`,getAuthCookie())
             .then(resp => setRows(resp.data?.resultCode === 2 ? [] : resp.data))
-    }, [])
+    }, [filter])
 
     return (
-        <div className='row my-5'>
+        <div className=' my-5'>
             <Body certificates={rows} filter={filter} setRows={setRows}/>
-            <Filters filter={filter} setFilter={setFilter}/>
+
+            <Filters filter={filter} setFilter={setFilter} />
         </div>
     )
 }

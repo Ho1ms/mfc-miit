@@ -5,24 +5,15 @@ import Cert from "./Cert";
 
 const Body = ({certificates, filter, setRows}) => {
     const state = useLocation().state
-    function sortHandle(x, y) {
-        return filter.sort_by_new ? y.id - x.id : x.id - y.id
-    }
-    function filterHandler(filter, cert) {
-        const fullname = `${cert.last_name} ${cert.name} ${cert.father_name}`
-        if (!cert.id.toString().includes(filter.id)) return false
-        if (!cert.group_name.toLowerCase().includes(filter.group_name.toLowerCase())) return false
-        if (!fullname.includes(filter.author)) return false
-        if (!filter.statuses.includes(cert.status)) return false
 
-        return true
-    }
 
 
     return (
-        <div className='col-md-9 col-lg-10 px-md-4'>
+        <div className=''>
             <h3>Справки {state.title}:</h3>
-
+            <button className="btn btn-outline-dark my-3 px-5" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">Фильтры
+            </button>
         <table className={'table table-hover'}>
             <thead>
             <tr>
@@ -41,10 +32,8 @@ const Body = ({certificates, filter, setRows}) => {
             </tr>
             </thead>
             <tbody>
-            {certificates?.sort(sortHandle)?.map(row => {
-                if (filterHandler(filter, row)) {
-                    return <Cert key={row.id} cert={row} setRows={setRows}/>
-                }
+            {certificates?.map(row => {
+                return <Cert key={row.id} cert={row} setRows={setRows}/>
             }
 
             )}

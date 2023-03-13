@@ -1,6 +1,6 @@
 import re
 import datetime
-from json import dumps
+from json import dumps, loads
 from .modules.form_config import *
 from flask_cors import cross_origin
 from flask import Blueprint, request
@@ -129,12 +129,28 @@ def get_form():
 def get_forms(user):
     db, sql = create_connect()
 
-    type = request.args.get('type')
-    if not type.isdigit():
+    type_ = request.args.get('type')
+    filter_ = request.args.get('filter')
+
+    if not type_.isdigit() or filter_ is None:
         return {}, 403
 
+    filter_ = loads(filter_)
+    cert_id = '%' + str(filter_.get('id')) + '%'
+    group_name = '%' + str(filter_.get('group_name')) + '%'
+    author = '%' + str(filter_.get('author')) + '%'
+    statuses = filter_.get('statuses')
+    sort_by_new = filter_.get('sort_by_new')
+    limit = filter_.get('limit')
+
+
     sql.execute(
-        f"""SELECT c.id, username, c.last_name, c.name, c.father_name, email, to_char(birthday,'dd.mm.YYYY') birthday, group_name,  to_char(create_at,  'HH24:MM dd.mm.YYYY') create_at, status,count {", to_char(date_start,'dd.mm.YYYY') date_start, to_char(date_end,'dd.mm.YYYY') date_end" if type=='2' else ''} FROM {certs_types[type]} c INNER JOIN bot_users bu on c.user_id = bu.id""")
+        f"""SELECT c.id, username, c.last_name, c.name, c.father_name, email, to_char(birthday,'dd.mm.YYYY') birthday,
+         group_name,  to_char(create_at,  'HH24:MM dd.mm.YYYY') create_at, status,count {", to_char(date_start,'dd.mm.YYYY') date_start, to_char(date_end,'dd.mm.YYYY') date_end" if type=='2' else ''} 
+         FROM {certs_types[type_]} c INNER JOIN bot_users bu on c.user_id = bu.id 
+         WHERE c.id::text LIKE %s AND group_name LIKE %s AND c.last_name || ' ' || c.name || ' ' || c.father_name LIKE %s AND
+         c.status =ANY(%s) ORDER BY id {'DESC' if sort_by_new else 'ASC'} LIMIT %s""", (cert_id, group_name, author, statuses, limit))
+
     rows = sql.fetchall()
 
     db.close()

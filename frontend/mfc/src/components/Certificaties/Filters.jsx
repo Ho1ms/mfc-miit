@@ -1,15 +1,20 @@
 import React from "react";
+import axios from "axios";
+import {apiUrl} from "../../config";
+import {getAuthCookie} from "../../modules";
+import {useLocation} from "react-router-dom";
 
 const Filters = ({filter, setFilter}) => {
+    const state = useLocation().state
+
     function sortHandle({target:{value, checked}}) {
-        console.log(filter)
         setFilter({
             ...filter,
             [value]: checked
         })
     }
     function filterHandle({target:{value, name, checked}}) {
-
+        console.log(filter, value, name)
         if (name==='status') {
             let array = [...filter.statuses]
 
@@ -33,8 +38,10 @@ const Filters = ({filter, setFilter}) => {
     }
 
     return (
+        <>
 
-        <div className='col-md-3 col-lg-2 d-md-block collapse' >
+        <div className="offcanvas offcanvas-end p-3" data-bs-scroll="true" tabIndex="-1"
+             id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
             <h3>Фильтры</h3>
             <div>
                 <div className="mb-3">
@@ -73,6 +80,18 @@ const Filters = ({filter, setFilter}) => {
                             Выданы
                         </label>
                     </div>
+                    </div>
+                <div className="mb-3">
+                    <label className="form-label">Лимит</label>
+                    <select  defaultValue={filter.limit} onChange={filterHandle} name='limit' className="form-control">
+                        {[50,100,250, 500].map((val, index) => {
+                            return (
+                                <option value={val} key={index} defaultChecked={filter.limit === val}>{val}</option>
+                            )
+                        })}
+                    </select>
+
+                </div>
 
             </div>
             <h3>Сортировать</h3>
@@ -84,7 +103,7 @@ const Filters = ({filter, setFilter}) => {
                 </label>
             </div>
         </div>
-        </div>
+        </>
     )
 }
 

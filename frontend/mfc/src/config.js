@@ -20,8 +20,8 @@ export const statuses = {
     'closed':'Выдана',
 }
 export const statuses_buttons = {
-    'new':'Взять в работу',
-    'active':'Готова к выдаче',
+    'new':'Начать',
+    'active':'Готова',
     'ready':'Выдать',
     'closed':'Выдана'
 }
